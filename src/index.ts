@@ -56,6 +56,18 @@ function isThereFile(){
         }
 }
 
+app.get("/test",(req,res) => {
+    // req;
+    
+    return res.send(isThereFile());
+  });
+
+app.get("/",(req,res) => {
+    // req;
+    return res.send("TYPESCRIPT");
+    // return res.send(isThereFile());
+  });
+
 app.get("/getParkingsDate",(req,res) => {
     // res.send("JEJE");
     let id = req.query.id;
@@ -483,7 +495,10 @@ app.post("/getParkings2",(req,res) => {
    
     res.send(data_);
     
-})
+});
+
+
+
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);

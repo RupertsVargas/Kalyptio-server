@@ -71,6 +71,15 @@ function isThereFile() {
         // console.error(err);
     }
 }
+app.get("/test", (req, res) => {
+    // req;
+    return res.send(isThereFile());
+});
+app.get("/", (req, res) => {
+    // req;
+    return res.send("TYPESCRIPT");
+    // return res.send(isThereFile());
+});
 app.get("/getParkingsDate", (req, res) => {
     // res.send("JEJE");
     let id = req.query.id;
