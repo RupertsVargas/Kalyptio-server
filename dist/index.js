@@ -58,7 +58,7 @@ app.use(fileupload());
 app.use(body_parser_1.default.json({ limit: "50mb" }));
 app.use(body_parser_1.default.urlencoded({ limit: "+50mb", extended: true, parameterLimit: 500000 }));
 //   example();
-function isThereFile(letter = null) {
+function isThereFile() {
     const fs = require('fs');
     let lectura = false;
     try {
@@ -366,7 +366,7 @@ app.post("/insertParkings", (req, res) => {
     dataReq["dateRange"] = "---";
     dataReq["files"] = allFiles;
     let data_ = JSON.stringify([dataReq]);
-    let file_ = isThereFile(letterstreet);
+    let file_ = isThereFile();
     // let 
     if (file_ === false) {
         console.log("ESCRIBIR");
@@ -394,3 +394,4 @@ app.post("/insertParkings", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
+//# sourceMappingURL=index.js.map

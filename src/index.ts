@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({limit: "+50mb", extended: true, parameterLimit:50
 
 
 //   example();
-function isThereFile(letter=null){
+function isThereFile(){
     const fs = require('fs');
     let lectura = false;
         try {
@@ -453,7 +453,7 @@ app.post("/getParkings2",(req,res) => {
     dataReq["dateRange"] = "---";
     dataReq["files"] = allFiles;
     let data_ = JSON.stringify([dataReq]);
-    let file_ = isThereFile(letterstreet);
+    let file_ = isThereFile();
     // let 
     if(file_ === false){
         console.log("ESCRIBIR");
