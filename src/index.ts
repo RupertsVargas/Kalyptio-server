@@ -1,3 +1,4 @@
+// COMO NO SE PUEDE OBTENER DATOS DEL GIT ME TUVE LA NECESIDAD DE BUSCAR UN METODO CACHÉ
 /**
  * Required External Modules
  */
@@ -6,10 +7,14 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import moment   from 'moment';
-
+// import { AsyncLocalStorage } from "async_hooks";
+var NodeCache = require( "node-cache" );
+const myCache = new NodeCache();
 import  bodyParser  from "body-parser";
-import { send } from "process";
-const multer  = require('multer')
+// import { send } from "process";
+var localStorage = require('localStorage');
+const multer  = require('multer');
+var ls = require('local-storage');
 // const upload = multer({ dest: 'uploads/' })
 multer().single('files')
 dotenv.config();
@@ -55,17 +60,47 @@ function isThereFile(){
         // console.error(err);
         }
 }
+function isThereFileLocal(){
+    // ls('json', '{}');
+    // ls.get('json');
+    // let data = localStorage.getItem('json');
+    let data =  myCache.get( "json" );
+    // console.log(data);
+    // return "";
+    if(data==null || data=="null"){
+        return false;
+    }
+    // console.log(data);
+    // res.send(ls.get('json'));
+    return  isString(data);
+    // return JSON.parse(data);
+}
 
 app.get("/test",(req,res) => {
     // req;
+    // console.log()
+    // let obj = { my: "Special", variable: 42 };
     
-    return res.send(isThereFile());
+//    let data = myCache.set( "myKey", obj, 100000 );
+    console.log(myCache.get( "myKey" ));
+    // let data = localStorage.getItem('json');
+
+    let data = myCache.get( "myKey" );
+    if(data==null || data=="null"){
+        return false;
+    }
+// 
+    res.send((myCache.get( "myKey" )));
+    return (data);
+    // return JSON.parse(data);
+
+
   });
 
 app.get("/",(req,res) => {
     // req;
     return res.send("TYPESCRIPT");
-    // return res.send(isThereFile());
+    
   });
 
 app.get("/getParkingsDate",(req,res) => {
@@ -260,12 +295,18 @@ app.get("/getParkingsDate",(req,res) => {
 
 
 
-    let data = isThereFile();
+    // let data = isThereFile();
+    let data = isThereFileLocal();
+    // return res.send(isThereFile());
+    
+    // console.log(data);
+
     const fs = require('fs');
     let arrayAuxYes :any= [];
     let initCopy = req.query.dateInit+"T00:00:01";
     let endCopy = req.query.dateEnd+"T00:00:01";
 
+    // return res.send(data);
     data.forEach( (element:any) => {
         // res.send(element);
         if(element.id==id){
@@ -287,6 +328,7 @@ app.get("/getParkingsDate",(req,res) => {
                     ){
             //     // res.json( 'la fecha de hoy esta en el rango')
                         res.send(("NO PUEDES"));
+                        return;
                     }else{
 
             
@@ -300,17 +342,24 @@ app.get("/getParkingsDate",(req,res) => {
             if(element.dateRange == "---"){
                 let jsonString = {init:req.query.dateInit,end:req.query.dateEnd,data: ArrayDataWithTotal};
                 element.dateRange = JSON.stringify([jsonString]);
-                fs.writeFileSync('data.json', JSON.stringify(data));
-                res.send(data);
+                // fs.writeFileSync('data.json', JSON.stringify(data));
+                // REGRESAR
+                myCache.set( "json", data, 1000000 );
+                return res.send(data);
+                
                 // res.send((true));
             }else{
-
+                
                 let arraPush = {init:req.query.dateInit,end:req.query.dateEnd,data: ArrayDataWithTotal};
                 arrayAuxYes.push(arraPush);
                 element.dateRange = JSON.stringify(arrayAuxYes);
-                fs.writeFileSync('data.json', JSON.stringify(data));
+                // fs.writeFileSync('data.json', JSON.stringify(data));
+                
+                // ls('json', JSON.stringify(data));
+                myCache.set( "json", data, 1000000 );
                 // res.send()
-                res.send(data);
+                // return res.send("JEJE");
+                return res.send(data);
             
             }
 
@@ -328,15 +377,15 @@ app.get("/getParkingsDate",(req,res) => {
 
 app.get("/getParkings",(req,res) => {
 
-    let data = isThereFile();
-    // let 
+    // let data = isThereFile(); 
+    let data = isThereFileLocal();
 
     let variablesGet = req.query ? req.query : null;
 
     if(data === false){
         // console.log("ESCRIBIR");
         data = [];
-        // fs.writeFileSync('data.json', data_);
+        
     }else{
 
         
@@ -348,7 +397,8 @@ app.get("/getParkings",(req,res) => {
 
 app.post("/getParkings2",(req,res) => {
     let variables_ = req.body ? req.body : null;
-    let data = isThereFile();
+    // let data = isThereFile();
+    let data = isThereFileLocal();
     let typeS = variables_.type === null ? false : variables_.type.value;
     let priceS = variables_.price === null ? false : variables_.price.value;
     let amenitiesS = variables_.amenities === null ? false : variables_.amenities;
@@ -366,7 +416,7 @@ app.post("/getParkings2",(req,res) => {
     if(data === false){
         // console.log("ESCRIBIR");
         data = [];
-        // fs.writeFileSync('data.json', data_);
+        
     }else{
         
         
@@ -446,7 +496,13 @@ app.post("/getParkings2",(req,res) => {
     
 })
 
-
+function isString(data:any){
+    if (typeof data !== "string") {
+        return data;
+    }else{
+        return JSON.parse(data);
+    }
+}
 // app.post("/insertParkings", [multer.single('attachment')] , (req:any,res:any) => {
     app.post("/insertParkings", (req:any,res) => {
 
@@ -465,31 +521,59 @@ app.post("/getParkings2",(req,res) => {
     dataReq["dateRange"] = "---";
     dataReq["files"] = allFiles;
     let data_ = JSON.stringify([dataReq]);
-    let file_ = isThereFile();
+    // let file_ = isThereFile();
+    let file_ = isThereFileLocal();
     // let 
     if(file_ === false){
         console.log("ESCRIBIR");
         
-        
-        fs.writeFileSync('data.json', data_);
+        // SIN ARCHIVO LOCAL
+        // isThereFileLocal
+        // ls.backend(sessionStorage);
+            myCache.set( "json", data_, 1000000 );
+        // isThereFileLocal
+        // localStorage.setItem('json', JSON.stringify(data_));
+        // ls('json', JSON.stringify(data_));
+        // CON ARCHIVO DESCOMENTAR
+        // fs.writeFileSync('data.json', data_);
     }else{
-
+        console.log("---");
+        console.log(file_);
         let arrayStreet:any = {A:0,B:0,C:0};
-        
-        file_.forEach( (element:any) => {
-            let calle = element.street
-            arrayStreet[calle] = arrayStreet[calle] + 1 ;
-            // if(letterstreet === calle){
-            //     arrayStreet[]
+        let auxFile:any = [];
+        // AÑADIO
+        // if (Array.isArray(file_)) {
+            // es un array
+            file_.forEach( (element:any) => {
+                let calle = element.street
+                arrayStreet[calle] = arrayStreet[calle] + 1 ;
+                // if(letterstreet === calle){
+                //     arrayStreet[]
+                // }
+            });
+            // auxFile = file_;
+            // console.log("ARRAY")
+            // } else if (typeof file_ === 'object') {
+
+                // let calle = file_.street
+                // arrayStreet[calle] = arrayStreet[calle] + 1 ;
+                // auxFile.push(file_);
+        // console.log("OBEJT");
             // }
-        });
+            
+        
+        // let newFile = auxFile;
         // for
         dataReq["id"] = file_.length+1 ;
         dataReq["number"] = arrayStreet[letterstreet]+1;
         file_.push(dataReq);
         console.log(file_.length);
-        file_ = JSON.stringify(file_);
-        fs.writeFileSync('data.json', file_);
+        // file_ = JSON.stringify(file_);
+        // file_ = (newFile);
+        // fs.writeFileSync('data.json', file_);
+        
+        myCache.set( "json", file_, 1000000 );
+        // localStorage.setItem('json', (file_));
         
     }
    
