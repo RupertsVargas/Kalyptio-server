@@ -9,7 +9,7 @@ In the project directory, you can run:
 
 
 
-![Kalyptio Logo](./kalyptio.png "Kalyptio Logo")
+
 # Kalyptio Fullstack Code Challenge
 
 A garage parking which manages plenty of car spaces needs to develop an app in order to create, delete, list and filter their available parking spaces. Your mission is to build a webapp in order to solve the company's needs for the following use case:
