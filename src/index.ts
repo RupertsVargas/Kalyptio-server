@@ -344,7 +344,7 @@ app.get("/getParkingsDate",(req,res) => {
                 element.dateRange = JSON.stringify([jsonString]);
                 // fs.writeFileSync('data.json', JSON.stringify(data));
                 // REGRESAR
-                myCache.set( "json", data, 1000000 );
+                myCache.set( "json", data, 3000000 );
                 return res.send(data);
                 
                 // res.send((true));
@@ -356,7 +356,7 @@ app.get("/getParkingsDate",(req,res) => {
                 // fs.writeFileSync('data.json', JSON.stringify(data));
                 
                 // ls('json', JSON.stringify(data));
-                myCache.set( "json", data, 1000000 );
+                myCache.set( "json", data, 3000000 );
                 // res.send()
                 // return res.send("JEJE");
                 return res.send(data);
@@ -530,7 +530,7 @@ function isString(data:any){
         // SIN ARCHIVO LOCAL
         // isThereFileLocal
         // ls.backend(sessionStorage);
-            myCache.set( "json", data_, 1000000 );
+            myCache.set( "json", data_, 3000000 );
         // isThereFileLocal
         // localStorage.setItem('json', JSON.stringify(data_));
         // ls('json', JSON.stringify(data_));
@@ -572,7 +572,7 @@ function isString(data:any){
         // file_ = (newFile);
         // fs.writeFileSync('data.json', file_);
         
-        myCache.set( "json", file_, 1000000 );
+        myCache.set( "json", file_, 3000000 );
         // localStorage.setItem('json', (file_));
         
     }
